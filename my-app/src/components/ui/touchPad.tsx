@@ -1,10 +1,14 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import useDevice from "@/app/libs/useDevice";
 
-export function TouchPad({ currentDevice, apiService, onTogglePlayPause }) {
+export function TouchPad({ device }) {
   const [swipeDirection, setSwipeDirection] = useState("");
   const [cornerClick, setCornerClick] = useState("");
   const [doubleClick, setDoubleClick] = useState(false);
+
+  const { sendDeviceCommand } = useDevice(device);
+
   let touchStartX = 0;
   let touchStartY = 0;
 
@@ -44,7 +48,7 @@ export function TouchPad({ currentDevice, apiService, onTogglePlayPause }) {
     const clickX = e.clientX - rect.left;
     const clickY = e.clientY - rect.top;
 
-    const threshold = 50; 
+    const threshold = 50;
 
     if (clickX < threshold && clickY < threshold) {
       setCornerClick("Top Left");
@@ -61,7 +65,7 @@ export function TouchPad({ currentDevice, apiService, onTogglePlayPause }) {
 
     setTimeout(() => {
       setCornerClick("");
-    }, 1000); 
+    }, 1000);
   };
 
   const handleDoubleClick = () => {
@@ -86,60 +90,45 @@ export function TouchPad({ currentDevice, apiService, onTogglePlayPause }) {
     };
   }, []);
 
-  const handleChange = async (command) => {
-    await apiService.sendDeviceCommand(currentDevice, command);
-  };
-
   useEffect(() => {
-    console.log("Touch connected to:", currentDevice);
-
     switch (swipeDirection) {
       case "Swipe Right":
-        console.log("Action for Swipe Right");
-        handleChange("nextTrack");
+        console.log("Action for Swipe Right - next track");
+        sendDeviceCommand("nextTrack");
         break;
       case "Swipe Left":
-        console.log("Action for Swipe Left");
-        handleChange("previousTrack");
+        console.log("Action for Swipe Left - previous track");
+        sendDeviceCommand("previousTrack");
         break;
       case "Swipe Up":
-        console.log("Action for Swipe Up");
-        handleChange("volumeUp");
+        console.log("Action for Swipe Up - Turning up the volume");
+        sendDeviceCommand("volumeUp");
 
         break;
       case "Swipe Down":
-        console.log("Action for Swipe Down");
-        handleChange("volumeDown");
+        console.log("Action for Swipe Down - Turning down volume");
+        sendDeviceCommand("volumeDown");
         break;
       default:
         break;
     }
 
-    const test = async () => {
-      await apiService.sendDeviceCommand(
-        currentDevice,
-        "play",
-        undefined,
-        "x-sonos-spotify:spotify%3atrack%3a2AI6kH6ogznIwt4JKDWy05?sid=9&flags=8224&sn=1"
-      );
-    };
-
     if (cornerClick) {
       console.log(`Corner clicked: ${cornerClick}`);
       console.warn("No config found on corner click - Warn");
-      test();
+      sendDeviceCommand("play");
     }
 
     if (doubleClick) {
       console.log("Double Click detected!");
-      onTogglePlayPause();
+      sendDeviceCommand("playStateHandler");
     }
-  }, [swipeDirection, cornerClick, doubleClick, currentDevice]);
+  }, [swipeDirection, cornerClick, doubleClick, device]);
 
   return (
     <section
       id="touchPad"
-      className="relative my-3 flex h-full w-full min-h-[8.75rem] max-h-52 animate-pulse flex-col items-center justify-center rounded-[0.563rem] border-2 border-[#7c7c7c3e] bg-[#FAFAFA] text-xl font-semibold"
+      className="relative mt-3 mb-8 flex h-full w-full min-h-[20.75rem] max-h-52 animate-pulse flex-col items-center justify-center rounded-[0.563rem] border-2 border-[#7c7c7c3e] bg-[#FAFAFA] text-xl font-semibold"
     >
       {swipeDirection || cornerClick || (doubleClick ? "Double Clicked!" : "")}
     </section>

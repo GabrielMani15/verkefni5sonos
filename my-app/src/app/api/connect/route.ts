@@ -4,10 +4,12 @@ export async function POST(req) {
     const { host, action, seconds, spotifyUri } = await req.json();
     
     const device = new DeviceController(host);
-
     try {
         let result;
         switch (action) {
+            case 'playStateHandler':
+                result = await device.playStateHandler();
+                break;
             case 'play':
                 result = await device.play(spotifyUri);
                 break;

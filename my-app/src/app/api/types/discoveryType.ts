@@ -1,5 +1,6 @@
 export interface SystemConfig {
     host: string;
+    systemId: string,
     systemName: string;
     devices: DeviceInfo[];
     devicesCount: number;
