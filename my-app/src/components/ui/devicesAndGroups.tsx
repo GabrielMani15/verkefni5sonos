@@ -40,15 +40,15 @@ export default function DevicesAndGroups({ systems }) {
               return (
                 <button
                   key={device.id}
-                  className="flex items-center justify-start gap-x-2 group w-[89px]"
+                  className="flex items-center justify-start gap-x-2 group w-fit"
                   onClick={() => setSelectedDevice(device)}
                 >
                   <div
-                    className={`size-4 rounded-full border-[3px] group-hover:bg-slate-100 ${borderColor}`}
+                    className={`size-6 rounded-full border-[3px] group-hover:bg-slate-100 ${borderColor}`}
                   ></div>
                   <div className="text-left font-semibold">
-                    <p className="text-[0.625rem]">{device.roomName}</p>
-                    <p className="text-[0.563rem]">
+                    <p className="text-[0.925rem]">{device.roomName}</p>
+                    <p className="text-[0.863rem]">
                       {device.model.replace(/[0-9;:]/g, "")}
                     </p>
                   </div>

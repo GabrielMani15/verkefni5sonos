@@ -9,7 +9,6 @@ import { SystemProvider } from "@/app/libs/systemContext";
 
 export default function SystemsList() {
   const { systems, isLoading, error } = useFetchSystem();
-
   useEffect(() => {
     if (!isLoading && !error) {
       config(systems);

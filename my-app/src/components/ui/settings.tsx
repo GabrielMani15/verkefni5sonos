@@ -40,6 +40,7 @@ export default function SettingsPopUp() {
     localStorage.setItem("selectedRadio", selectedRadio);
 
     showNotificationForChange();
+    window.location.reload();
   };
 
   const handleClose = () => setIsOpen(false);
@@ -89,7 +90,9 @@ export default function SettingsPopUp() {
           </div>
           <div className="mb-4">
             <label>Spotify ID</label>
-            <p className="text-sm">To access spotify you need to provide project/acces id</p>
+            <p className="text-sm">
+              To access spotify you need to provide project/acces id
+            </p>
             <input
               type="text"
               value={spotifyId}

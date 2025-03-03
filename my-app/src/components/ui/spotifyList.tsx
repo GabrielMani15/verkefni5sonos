@@ -37,12 +37,13 @@ const PlaylistComponent: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [userId, setUserId] = useState<string | null>(null);
   const [authInProgress, setAuthInProgress] = useState<boolean>(false);
+  const [error, setError] = useState<boolean>(false);
   const { selectedDevice } = useSystemContext(); // Use context
 
   const { sendDeviceCommand } = useDevice(selectedDevice);
   console.log(selectedDevice);
 
-  const clientId = "08e18a1d3e41466b9ff8bff566f9e795";
+  const clientId = localStorage.getItem("spotifyId");
   const redirectUri = "http://localhost:3000/";
 
   // Helper functions to generate code verifier and challenge
@@ -264,7 +265,10 @@ const PlaylistComponent: React.FC = () => {
 
       // Check if auth is in progress to prevent redirect loops
       const authInProgress = localStorage.getItem("auth_in_progress");
-
+      if (!clientId) {
+        setError(true);
+        throw new Error("No client id provied, go to settings and add it.");
+      }
       // Check for authorization code in URL
       const params = new URLSearchParams(window.location.search);
       const code = params.get("code");
@@ -307,114 +311,134 @@ const PlaylistComponent: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-white border-[#7c7c7c3e] border-2 min-96 h-fit p-8 rounded-[15px] mb-5">
-      <h1 className="text-3xl font-bold mb-6">Spotify Playlists</h1>
+    <>
+      {!error ? (
+        <div className="bg-white border-[#7c7c7c3e] border-2 min-h-[96] h-fit p-8 rounded-[15px] mb-5">
+          <h1 className="text-3xl font-bold mb-6">Spotify Playlists</h1>
 
-      {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <p className="text-white text-xl">
-            {authInProgress ? (
-              "Authenticating with Spotify..."
-            ) : (
-              <div className="border-r-2 border-t-2 border-green-500 size-24 rounded-full animate-spin"></div>
-            )}
-          </p>
+          {loading ? (
+            <div className="flex justify-center items-center h-64">
+              <p className="text-white text-xl">
+                {authInProgress ? (
+                  "Authenticating with Spotify..."
+                ) : (
+                  <div className="border-r-2 border-t-2 border-green-500 w-24 h-24 rounded-full animate-spin"></div>
+                )}
+              </p>
+            </div>
+          ) : (
+            <>
+              <div
+                id="playlist-container"
+                className="grid max-[600px]:grid-cols-1 grid-cols-2 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-6"
+              >
+                {playlists.length > 0 ? (
+                  playlists.map((playlist) => (
+                    <div
+                      key={playlist.id}
+                      onClick={() => openPlaylist(playlist.href)}
+                      className="h-16 border-[#7c7c7c3e] border-[1px] transition duration-300 flex items-center pl-7 rounded-full cursor-pointer hover:bg-slate-50"
+                    >
+                      <div className="flex gap-x-2">
+                        {playlist.images[0]?.url ? (
+                          <img
+                            src={playlist.images[0]?.url}
+                            alt={playlist.name}
+                            className="size-12 object-cover rounded-[6px]"
+                          />
+                        ) : (
+                          <div className="w-full h-40 rounded-md flex items-center justify-center">
+                            <span className="text-3xl">🎵</span>
+                          </div>
+                        )}
+                        <div className="pt-1">
+                          <h3 className="text-sm font-semibold truncate">
+                            {playlist.name.length > 12
+                              ? playlist.name.slice(
+                                  0,
+                                  playlist.name.lastIndexOf(" ", 26)
+                                )
+                              : playlist.name}
+                          </h3>
+                          <h3 className="text-sm font-medium">
+                            By {playlist.owner}
+                          </h3>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="col-span-3 text-center py-8">
+                    <p className="text-xl">No playlists found</p>
+                  </div>
+                )}
+              </div>
+
+              {tracks.length > 0 && (
+                <div className="mt-12">
+                  <h2 className="text-2xl font-bold mb-4">Tracks</h2>
+                  <div
+                    id="tracks-container"
+                    className="bg-[#121212] rounded-[12px] p-4 overflow-y-auto h-96  
+                    [&::-webkit-scrollbar]:w-2
+                    [&::-webkit-scrollbar-track]:bg-gray-100
+                    [&::-webkit-scrollbar-thumb]:bg-gray-300
+                    dark:[&::-webkit-scrollbar-track]:bg-neutral-700
+                    dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500"
+                  >
+                    {tracks.map((track, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center p-3 hover:bg-[#282828] transition duration-200 rounded-md cursor-pointer "
+                        onClick={() => handlePlayTrack(track)}
+                      >
+                        <div className="text-gray-400 mr-4">{index + 1}</div>
+                        <div className="flex-1">
+                          <p className="font-semibold text-white">
+                            {track.track.name}
+                          </p>
+                          <p className="text-sm text-gray-400">
+                            {track.track.artists
+                              .map((artist) => artist.name)
+                              .join(", ")}
+                          </p>
+                        </div>
+                        <div className="text-gray-400 text-sm hidden md:block flex-grow">
+                          {track.track.album.name}
+                        </div>
+                        <div className="ml-4 text-green-500">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                          </svg>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
         </div>
       ) : (
-        <>
-          <div
-            id="playlist-container"
-            className="grid max-[600px]:grid-cols-1 grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-6"
-          >
-            {playlists.length > 0 ? (
-              playlists.map((playlist) => (
-                <div
-                  key={playlist.id}
-                  className="p-4 rounded-lg border-[#7c7c7c3e] border-[1px] transition duration-300"
-                >
-                  <div className="relative mb-4">
-                    {playlist.images[0]?.url ? (
-                      <img
-                        src={playlist.images[0]?.url}
-                        alt={playlist.name}
-                        className="w-full h-40 object-cover rounded-md"
-                      />
-                    ) : (
-                      <div className="w-full h-40 bg-[#282828] rounded-md flex items-center justify-center">
-                        <span className="text-3xl">🎵</span>
-                      </div>
-                    )}
-                    <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black to-transparent">
-                      <h3 className="text-sm font-semibold truncate text-white">
-                        {playlist.name}
-                      </h3>
-                    </div>
-                  </div>
-                  <button
-                    onClick={() => openPlaylist(playlist.href)}
-                    className="w-full bg-black text-white py-2 px-4 rounded-full hover:bg-green-600 transition duration-300 flex items-center justify-center"
-                  >
-                    <span>View Tracks</span>
-                  </button>
-                </div>
-              ))
-            ) : (
-              <div className="col-span-3 text-center py-8">
-                <p className="text-xl">No playlists found</p>
-              </div>
-            )}
-          </div>
-
-          {tracks.length > 0 && (
-            <div className="mt-12">
-              <h2 className="text-2xl font-bold mb-4">Tracks</h2>
-              <div
-                id="tracks-container"
-                className="bg-[#121212] rounded-lg p-4"
-              >
-                {tracks.map((track, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center p-3 hover:bg-[#282828] transition duration-200 rounded-md cursor-pointer"
-                    onClick={() => handlePlayTrack(track)}
-                  >
-                    <div className="text-gray-400 mr-4">{index + 1}</div>
-                    <div className="flex-1">
-                      <p className="font-semibold text-white">
-                        {track.track.name}
-                      </p>
-                      <p className="text-sm text-gray-400">
-                        {track.track.artists
-                          .map((artist) => artist.name)
-                          .join(", ")}
-                      </p>
-                    </div>
-                    <div className="text-gray-400 text-sm hidden md:block flex-grow">
-                      {track.track.album.name}
-                    </div>
-                    <div className="ml-4 text-green-500">
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="24"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <polygon points="5 3 19 12 5 21 5 3"></polygon>
-                      </svg>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </>
+        <div className="my-5">
+          <h1 className="font-semibold">Set your client id</h1>
+          <p className="text-sm">
+            Client id is needed to use spotify, go to settings third icon in
+            header
+          </p>
+        </div>
       )}
-    </div>
+    </>
   );
 };
 
