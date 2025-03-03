@@ -35,4 +35,8 @@ Spotify api refresh
 
 Heildarvirkni síðunnar, sem samstillir Sonos tæki og gerir notendum kleift að nýta Spotify þjónustuna í rauntíma, gerir þetta verkefni að öflugu tæki fyrir þá sem vilja stýra hljómi og tónlist á einfaldan, fljótan og skilvirkan hátt. Eftir því sem fleiri eiginleikar verða bættir við, verður vefsíðan enn fullkomnari og getur boðið upp á enn fleiri möguleika í stjórnun og stjórnunartækni.
 
+## Figma hönnun
 ![Myndalýsing](./myndafverkefni5.png)
+
+## System design hugmyndin
+![Myndalýsing](./hugmyndafapi.png)
