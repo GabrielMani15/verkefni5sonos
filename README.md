@@ -23,9 +23,13 @@ Einn áhugaverðasti eiginleikinn sem bætt var við síðuna er touch control b
 
 ## Áframhaldandi þróun
 
-Í framtíðinni er áætlað að bæta við fleiri eiginleikum sem munu auka bæði sveigjanleika og notendavænt viðmót. Einn mikilvægasti eiginleikinn sem verður bættur við er stuðningur fyrir Sonos "groups", sem gerir notendum kleift að sameina mörg tæki í einn hljómflokk. Þetta mun leyfa notendum að stjórna hljómi á stærra svæði eða hópi tækja með einni aðgerð.
-
+Í framtíðinni er áætlað að bæta við fleiri eiginleikum sem munu auka bæði sveigjanleika og notendavænt viðmót. Einn mikilvægasti eiginleikinn sem verður bættur við er stuðningur fyrir Sonos "groups", sem gerir notendum kleift að sameina mörg tæki í einn hljómflokk. Þetta mun leyfa notendum að stjórna hljómi á stærra svæði eða hópi tækja með einni aðgerð. og meira user friendly semsagt spotify quick connect, user onboarding til að gera uppsetningu léttari
 Einnig er áætlað að bæta við Spotify leitartæki sem leyfir notendum að finna og spila tónlist frá Spotify beint úr vefsíðunni. Með því að tryggja að metadata frá Spotify sé réttur og nákvæmur, verður upplifun notenda á tónlist minni trufluð og nákvæmni í upplýsingum mun aukast.
+
+## leiðbeiningar
+Spotify api refresh
+- Ef spotify api loadast ekki ýtið þá á svg icon 2 í header semsagt svg af reload. það mun endurhlaða vefsíðuni frá grunni
+
 
 ## Lokaframleiðsla
 
