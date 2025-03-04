@@ -31,7 +31,6 @@ export function DeviceCard({ device }) {
       const { currentTrack: deviceTrack, volume } = result;
 
       if (!deviceTrack) return;
-
       const trackData = {
         title: deviceTrack?.title,
         artist: deviceTrack?.artist,
@@ -139,7 +138,7 @@ export function DeviceCard({ device }) {
   };
 
   return (
-    <section className="relative mx-auto mb-5 flex h-full max-h-[4.313rem] w-full max-w-[31.125rem] justify-between rounded-[8px] border-[1px] border-[#7c7c7c3e] bg-white px-3 py-2 text-black shadow-sm hover:shadow-md transition-shadow">
+    <section className="relative mx-auto my-5 flex h-full max-h-[4.313rem] w-full max-w-[31.125rem] justify-between rounded-[8px] border-[1px] border-[#7c7c7c3e] bg-white px-3 py-2 text-black shadow-sm hover:shadow-md transition-shadow">
       <div className="absolute bottom-[0.5px] left-0 right-0 w-full px-3">
         {currentTrack && (
           <Slider
@@ -164,12 +163,12 @@ export function DeviceCard({ device }) {
             className="h-10 w-10 rounded-[6px] object-cover mr-2"
           />
         ) : (
-          <div className="h-10 w-10 rounded-[6px] bg-gray-200 flex items-center justify-center mr-2">
+          <div className="h-10 w-10 rounded-[6px] bg-gray-700 flex items-center justify-center mr-2">
             <Volume2 size={16} className="text-gray-400" />
           </div>
         )}
         <div className="overflow-hidden">
-          <h1 className="text-[0.625rem] font-medium text-gray-500">
+          <h1 className="text-[0.625rem] font-medium text-gray-700">
             {device.model} - {device.roomName}
           </h1>
           <h2 className="text-[0.688rem] font-bold truncate">
@@ -184,13 +183,13 @@ export function DeviceCard({ device }) {
       </div>
 
       <div className="flex items-center justify-end w-2/5 gap-x-3">
-        <div className="text-xs text-gray-500 mr-1 hidden sm:block">
+        <div className="text-xs text-gray-200 mr-1 hidden sm:block">
           {formatTime(position)} / {formatTime(currentTrack?.duration)}
         </div>
 
         <div className="flex items-center">
           <button
-            className="p-1 rounded-full hover:bg-gray-100 transition-colors"
+            className="p-1 rounded-full transition-colors"
             title="Cast to device"
             onClick={() => fetchPlaybackState(true)}
           >
@@ -200,7 +199,7 @@ export function DeviceCard({ device }) {
               viewBox="0 0 26 22"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
-              className="text-gray-700"
+              className="text-white"
             >
               <path
                 d="M18 6C18 6.27614 17.7761 6.5 17.5 6.5C17.2239 6.5 17 6.27614 17 6C17 5.72386 17.2239 5.5 17.5 5.5C17.7761 5.5 18 5.72386 18 6Z"
@@ -217,7 +216,7 @@ export function DeviceCard({ device }) {
 
         <button
           onClick={togglePlayState}
-          className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+          className="p-2 rounded-full transition-colors"
           aria-label={isPlaying ? "Pause" : "Play"}
         >
           {isPlaying ? <Pause size={20} /> : <Play size={20} />}

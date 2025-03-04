@@ -13,7 +13,7 @@ export default function Header() {
   };
 
   return (
-    <section className="flex h-16 w-full items-center justify-between mt-5">
+    <section className="flex items-center justify-between gap-y-3 w-full py-2 h-fit rounded-[6px] text-black">
       <div>
         <h1 className="text-[1.188rem] font-semibold">
           Good
@@ -43,7 +43,7 @@ export default function Header() {
             width="20.75"
             height="20.0163"
             transform="translate(0 0.539673)"
-            fill="white"
+            fill="none"
             fillOpacity="0.01"
           />
           <path
@@ -59,6 +59,7 @@ export default function Header() {
           viewBox="0 0 21 21"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
+          className="cursor-pointer"
           onClick={() => {
             window.location.reload();
             localStorage.clear();
@@ -68,7 +69,7 @@ export default function Header() {
             width="20.75"
             height="20.0163"
             transform="translate(0.125)"
-            fill="white"
+            fill="none"
             fillOpacity="0.01"
           />
           <path
@@ -92,14 +93,14 @@ export default function Header() {
             width="20.75"
             height="20.0163"
             transform="translate(0.25)"
-            fill="white"
+            fill="none"
             fillOpacity="0.01"
           />
           <path
             fillRule="evenodd"
             clipRule="evenodd"
             d="M1.46313 10.0079C1.46313 5.12704 5.56492 1.17029 10.6247 1.17029C15.6845 1.17029 19.7863 5.12704 19.7863 10.0079C19.7863 14.8887 15.6845 18.8456 10.6247 18.8456C5.56492 18.8456 1.46313 14.8887 1.46313 10.0079ZM10.6247 2.43798C6.29071 2.43798 2.7773 5.82717 2.7773 10.0079C2.7773 11.9723 3.55297 13.762 4.82499 15.1073C6.04712 13.2657 8.18775 12.0431 10.6252 12.0431C13.0624 12.0431 15.2028 13.2654 16.4251 15.1067C17.6967 13.7614 18.4722 11.972 18.4722 10.0079C18.4722 5.82717 14.9586 2.43798 10.6247 2.43798ZM15.4414 15.9846C14.476 14.3843 12.6802 13.3108 10.6252 13.3108C8.5701 13.3108 6.77406 14.3846 5.80879 15.9851C7.13827 16.9834 8.80951 17.5779 10.6247 17.5779C12.4402 17.5779 14.1118 16.9831 15.4414 15.9846ZM7.37408 8.68017C7.37408 6.94827 8.82953 5.54429 10.6249 5.54429C12.4203 5.54429 13.8758 6.94827 13.8758 8.68017C13.8758 10.4121 12.4203 11.8161 10.6249 11.8161C8.82953 11.8161 7.37408 10.4121 7.37408 8.68017ZM10.6249 6.81199C9.55532 6.81199 8.68825 7.6484 8.68825 8.68017C8.68825 9.71195 9.55532 10.5484 10.6249 10.5484C11.6945 10.5484 12.5616 9.71195 12.5616 8.68017C12.5616 7.6484 11.6945 6.81199 10.6249 6.81199Z"
-            fill="#1C2024"
+            fill="black"
           />
         </svg>
         {showSettings && <SettingsPopUp />}

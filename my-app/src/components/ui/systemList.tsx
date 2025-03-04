@@ -6,9 +6,12 @@ import Header from "./header";
 import SpotifyList from "./spotifyList";
 import { config } from "@/app/libs/config";
 import { SystemProvider } from "@/app/libs/systemContext";
+import { useState } from "react";
+import { motion } from "framer-motion";
 
 export default function SystemsList() {
   const { systems, isLoading, error } = useFetchSystem();
+
   useEffect(() => {
     if (!isLoading && !error) {
       config(systems);
@@ -18,10 +21,10 @@ export default function SystemsList() {
 
   return (
     <SystemProvider>
-      <div>
+      <div className="scrollbar-hidden overflow-hidden flex justify-center items-center">
         {isLoading && (
           <section className="h-screen w-full flex justify-center items-center">
-            <div className="size-24 border-t-2 border-r-2 border-black rounded-full animate-spin"></div>
+            <div className="size-24 border-t-2 border-r-2 border-blue-600 rounded-full animate-spin"></div>
           </section>
         )}
         {error && <p className="text-red-500">{error}</p>}
@@ -33,11 +36,13 @@ export default function SystemsList() {
           !error &&
           Array.isArray(systems) &&
           systems.length > 0 && (
-            <>
+            <section className="h-fit">
               <Header />
-              <SpotifyList />
-              <DevicesAndGroups systems={systems} />
-            </>
+              <div className="relative w-full h-[100vh] py-5 overflow-hidden mb-5">
+                <SpotifyList />
+                <DevicesAndGroups systems={systems} />
+              </div>
+            </section>
           )}
       </div>
     </SystemProvider>

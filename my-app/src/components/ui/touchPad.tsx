@@ -128,7 +128,7 @@ export function TouchPad({ device }) {
   return (
     <section
       id="touchPad"
-      className="relative mt-3 mb-8 flex h-full w-full min-h-[20.75rem] max-h-52 flex-col items-center justify-center rounded-[0.563rem] border-2 border-[#7c7c7c3e] bg-[#121212] text-xl font-semibold"
+      className="relative mt-3 mb-8 flex h-full w-full max-w-[31.125rem] min-h-[15.75rem] max-h-52 flex-col items-center justify-center rounded-[0.563rem] border-[2px] border-[#7c7c7c3e] bg-white text-xl font-semibold"
     >
       {swipeDirection || cornerClick || (doubleClick ? "Double Clicked!" : "")}
     </section>

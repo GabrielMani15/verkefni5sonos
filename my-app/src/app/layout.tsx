@@ -13,7 +13,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-white mx-5 lg:mx-28">{children}</body>
+      <body className="mx-5 my-3">{children}</body>
     </html>
   );
 }

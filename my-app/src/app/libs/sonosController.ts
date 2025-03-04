@@ -1,10 +1,23 @@
 import { Sonos } from 'sonos';
+
 export default class DeviceController {
     device: any;
+    private spotifyTokenData: {
+        accessToken: string | null;
+        refreshToken: string | null;
+        expiresAt: number | null;
+    };
+
     constructor(ip) {
         this.device = new Sonos(ip);
+        this.spotifyTokenData = {
+            accessToken: null,
+            refreshToken: null, 
+            expiresAt: null
+        };
     }
 
+    // Existing methods remain unchanged...
     async playStateHandler() {
         const currentState = await this.device.getCurrentState();
         if (currentState === 'playing') {
@@ -16,7 +29,6 @@ export default class DeviceController {
         return currentState === 'playing' ? false : true;
     }
     
-
     async adjustVolume(amount) {
         const currentVolume = await this.device.getVolume();
         const newVolume = Math.max(0, Math.min(100, currentVolume + amount));
@@ -46,6 +58,82 @@ export default class DeviceController {
         await this.device.pause();
         return true;
     }
+
+    // New function to handle Spotify token acquisition
+    async getSpotifyAccessToken() {
+        try {
+            // Check if we have a valid token already
+            if (this.spotifyTokenData.accessToken && this.spotifyTokenData.expiresAt && 
+                Date.now() < this.spotifyTokenData.expiresAt) {
+                return this.spotifyTokenData.accessToken;
+            }
+            
+            // Get client credentials from environment variables
+            const clientId = "08e18a1d3e41466b9ff8bff566f9e795";
+            const clientSecret = "fcd342044cdf4287b82eb549d84f8f58";
+            
+            if (!clientId || !clientSecret) {
+                throw new Error('Spotify credentials not configured. Set SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET in your environment variables.');
+            }
+            
+            // Create base64 encoded auth string
+            const authString = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+            
+            // Make token request
+            const response = await fetch('https://accounts.spotify.com/api/token', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Basic ${authString}`,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: 'grant_type=client_credentials'
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`Spotify token request failed: ${errorData.error}`);
+            }
+            
+            const data = await response.json();
+            
+            // Store the token data
+            this.spotifyTokenData = {
+                accessToken: data.access_token,
+                refreshToken: null, // Client credentials flow doesn't provide refresh tokens
+                expiresAt: Date.now() + (data.expires_in * 1000) - 60000 // Subtract 1 minute for safety
+            };
+            
+            return data.access_token;
+        } catch (error) {
+            console.error('Error getting Spotify access token:', error);
+            throw error;
+        }
+    }
+    
+    // Function to get track metadata from Spotify
+    async getSpotifyTrackMetadata(trackId) {
+        try {
+            const accessToken = await this.getSpotifyAccessToken();
+            
+            const response = await fetch(`https://api.spotify.com/v1/tracks/${trackId}`, {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`
+                }
+            });
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`Failed to get track data: ${errorData.error?.message || 'Unknown error'}`);
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('Error fetching Spotify track metadata:', error);
+            throw error;
+        }
+    }
+    
+    // Updated play function to use the new token management
     async play(spotifyUri?: string) {
         console.log("play method invoked");
     
@@ -70,52 +158,47 @@ export default class DeviceController {
                 const encodedSpotifyUri = encodeURIComponent(spotifyUri);
                 console.log("Encoded Spotify URI:", encodedSpotifyUri);
     
-                // Use the correct API call for Spotify
-                //let accessToken = "AQD7Nm8DgeVLsM5lqMCDx5tGHH3chIkly8q8bqMnkdmiZHL1_3my4jNiCGq42X6il94nLA2N7Q2wO5djFBZ7vgZZXCfqPjXUNT6I-LTBZ6WXExPAjDnbp94wzxyPfFsAIujmvLlk08y9UJxudFwrxvtNHx9BLtG5cRYYcluZFqFJuXcD7Ue9M9FuWUyOFnoTBoj2S_eEgb4gJmoxFVgsLHWbnO5xx42acOcMTYqTCZiMjsai1WypgJiTm_kmzYjfpVKH6rQweMsW8S3ao3OdSmc"
-                
-                const formattedUri = `x-sonos-spotify:${spotifyUri}?sid=9&flags=8224&sn=7`;
+                //Use encode or def spotify uri !
+                const formattedUri = `x-sonos-spotify:${encodedSpotifyUri}?sid=9&flags=8224&sn=7`;
                 await this.device.play(formattedUri);
-                /* this.device.on('AVTransport', (data) => {
-                    console.log("Transport state changed:", data);
-                    // This event fires when playback state changes
-                  }); */
-                //let accessToken = localStorage.getItem("accessToken")
-                //await this.device.play(`x-sonos-spotify:${encodedSpotifyUri}`, { headers: { Authorization: `Bearer ${accessToken}` } });
-
                 console.log("Spotify track started.");
 
+                // Extract track ID from URI
                 const trackId = spotifyUri.split(':').pop();
-                console.log("trackid",trackId)
-                const response = await fetch(`https://api.spotify.com/v1/tracks/${trackId}`, {
-                  headers: {
-                    'Authorization': `Bearer ${"AQD7Nm8DgeVLsM5lqMCDx5tGHH3chIkly8q8bqMnkdmiZHL1_3my4jNiCGq42X6il94nLA2N7Q2wO5djFBZ7vgZZXCfqPjXUNT6I"}`
-                  }
-                });
+                console.log("trackid", trackId);
                 
-                const spotifyMetadata = await response.json();
-                
-                // Step 3: Store the enhanced metadata in your application
-                // (You can't push this to Sonos, but you can use it in your UI)
-                const enhancedTrackInfo = {
-                  // Basic info from Sonos (may be partial)
-                  sonosInfo: await this.device.currentTrack(),
-                  
-                  // Rich info from Spotify
-                  title: spotifyMetadata.name,
-                  artist: spotifyMetadata.artists.map(a => a.name).join(', '),
-                  album: spotifyMetadata.album.name, 
-                  albumArtURL: spotifyMetadata.album.images[0]?.url,
-                  duration: spotifyMetadata.duration_ms,
-                  
-                  // Original URI for reference
-                  spotifyUri: spotifyUri
-                };
-                console.log(spotifyMetadata)
+                // Get metadata using the new method
+                try {
+                    const spotifyMetadata = await this.getSpotifyTrackMetadata(trackId);
+                    console.log("spotifyMetadata:", spotifyMetadata);
+                    
+                    // Store the enhanced metadata in your application
+                    const enhancedTrackInfo = {
+                        // Basic info from Sonos (may be partial)                        
+                        // Rich info from Spotify
+                        title: spotifyMetadata.name,
+                        artist: spotifyMetadata.artists.map(a => a.name).join(', '),
+                        album: spotifyMetadata.album.name, 
+                        albumArtURL: spotifyMetadata.album.images[0]?.url,
+                        duration: spotifyMetadata.duration_ms,
+                        
+                        // Original URI for reference
+                        spotifyUri: spotifyUri
+                    };
+                    //console.log("before:",encodedSpotifyUri)
+                    //await this.device.currentTrack(spotifyMetadata);
+
+                    console.log("Enhanced track info:", enhancedTrackInfo);
+                    return enhancedTrackInfo;  // Return the enhanced info
+                } catch (metadataError) {
+                    console.warn("Failed to get Spotify metadata:", metadataError);
+                    // Continue despite metadata failure - at least playback started
+                }
             }
     
-            // Return the current track after playing, in case of a URL
+            // Return the current track after playing
             const track = await this.device.currentTrack();
-            console.log("track updates:",track)
+            console.log("track updates:", track);
             return track;  // Return the track info
     
         } catch (error) {
@@ -123,7 +206,6 @@ export default class DeviceController {
             throw new Error(`Failed to play: ${error.message}`);
         }
     }
-    
     
     async getSongPosition() {
         try {
@@ -134,7 +216,7 @@ export default class DeviceController {
         }
     }
 
-    async getPlaybackState() {
+    async getPlaybackState(gotCalledBySpx?) {
         try {
             const [currentTrack, state, volume] = await Promise.all([
                 this.device.currentTrack(),
@@ -143,6 +225,7 @@ export default class DeviceController {
             ]);
             return {
                 currentTrack: {
+                    sptx: gotCalledBySpx || "Nothings",
                     title: currentTrack.title || "No Track",
                     artist: currentTrack.artist || "Unknown Artist",
                     album: currentTrack.album || "Unknown Album",
@@ -184,6 +267,7 @@ export default class DeviceController {
             throw new Error(`Failed to get device info: ${error.message}`);
         }
     }
+    
     async seek(seconds = 1) {
         try {
             await this.device.seek(seconds);

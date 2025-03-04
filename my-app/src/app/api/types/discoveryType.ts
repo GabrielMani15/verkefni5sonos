@@ -27,3 +27,31 @@ export interface DeviceInfo {
     macAddress: string;
     houseHoldId: string;
 }
+
+export interface Playlist {
+    name: string;
+    owner: string;
+    type: string;
+    id: string;
+    images: Array<{ url: string }>;
+    tracks: any;
+    href: string;
+    uri: string;
+}
+  
+export interface Track {
+    track: {
+        name: string;
+        artists: Array<{ name: string }>;
+        album: { name: string };
+        uri: string;
+        external_urls: {
+        spotify: string;
+    };
+};
+}
+
+export interface Profile {
+    id: string;
+    display_name?: string;
+}
