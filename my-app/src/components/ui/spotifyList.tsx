@@ -6,7 +6,7 @@ import { Playlist, Track, Profile } from "@/app/api/types/discoveryType";
 import { SearchIcon } from "lucide-react";
 type PlaylistTapProps = {
   playlist: Playlist;
-  openPlaylist: Function;
+  openPlaylist: any;
 };
 
 const SearchBar = () => {
@@ -32,9 +32,6 @@ const SearchBar = () => {
       )}
     </div>
   );
-};
-type TracksProps = {
-  tracks: Track[];
 };
 const PlaylistTap: React.FC<PlaylistTapProps> = ({
   playlist,

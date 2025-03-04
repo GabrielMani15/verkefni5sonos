@@ -34,7 +34,7 @@ export interface Playlist {
     type: string;
     id: string;
     images: Array<{ url: string }>;
-    tracks: any;
+    tracks: Track[];
     href: string;
     uri: string;
 }

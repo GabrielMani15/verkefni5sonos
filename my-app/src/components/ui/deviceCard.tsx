@@ -28,7 +28,7 @@ export function DeviceCard({ device }) {
       const { result } = await sendDeviceCommand("getPlaybackState");
       if (!result) return;
 
-      const { currentTrack: deviceTrack, volume } = result;
+      const { currentTrack: deviceTrack } = result;
 
       if (!deviceTrack) return;
       const trackData = {

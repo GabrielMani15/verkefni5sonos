@@ -1,7 +1,6 @@
 import { Sonos } from 'sonos';
-
 export default class DeviceController {
-    device: any;
+    device: any | unknown;
     private spotifyTokenData: {
         accessToken: string | null;
         refreshToken: string | null;

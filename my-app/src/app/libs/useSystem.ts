@@ -26,7 +26,7 @@ export default function useFetchSystem() {
                 } else {
                     throw new Error("Invalid response format");
                 }
-            } catch (err) {
+            } catch {
                 setError("Error occurred in discovery; try to reload the page");
             } finally {
                 setIsLoading(false);

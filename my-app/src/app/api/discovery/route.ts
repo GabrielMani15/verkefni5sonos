@@ -15,8 +15,7 @@ async function discoverSonosHosts() {
                         device.getCurrentState(),
                     ]);
                     console.log(deviceInfo)
-                    let imgUrl = "http://"+deviceInfo.friendlyName.slice(0,13)+deviceInfo.iconList.icon.url
-                    //console.log("Path to image:",deviceInfo.friendlyName.slice(0,13)+deviceInfo.iconList.icon.url)
+                    const imgUrl = "http://"+deviceInfo.friendlyName.slice(0,13)+deviceInfo.iconList.icon.url
                     return {
                         host: device.host,
                         name: deviceInfo.displayName,
@@ -28,7 +27,7 @@ async function discoverSonosHosts() {
                         houseHoldId: deviceInfo.UDN.slice(-4),
                         deviceImgUrl: imgUrl
                     };
-                } catch (error: any) {
+                } catch (error: unknown) {
                     console.warn("Error fetching device info:", error);
                     return null;
                 }
@@ -37,9 +36,9 @@ async function discoverSonosHosts() {
 
         const validDevices = deviceList.filter(Boolean);
 
-        let systemSet = new Set<string>();
+        const systemSet = new Set<string>();
 
-        let systemMap = new Map<string, { systemName: string; devices: DeviceInfo[] }>();
+        const systemMap = new Map<string, { systemName: string; devices: DeviceInfo[] }>();
 
         validDevices.forEach((device) => {
             const systemId = device.houseHoldId;
@@ -67,7 +66,7 @@ async function discoverSonosHosts() {
             systemCount: systemSet.size,
             systems,
         };
-    } catch (error: any) {
+    } catch (error: any | unknown) {
         return {
             success: false,
             error: error.message,
