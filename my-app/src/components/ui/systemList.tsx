@@ -6,8 +6,6 @@ import Header from "./header";
 import SpotifyList from "./spotifyList";
 import { config } from "@/app/libs/config";
 import { SystemProvider } from "@/app/libs/systemContext";
-import { useState } from "react";
-import { motion } from "framer-motion";
 
 export default function SystemsList() {
   const { systems, isLoading, error } = useFetchSystem();

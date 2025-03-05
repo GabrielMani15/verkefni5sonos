@@ -1,5 +1,4 @@
 "use client"
-
 import { useEffect, useState } from "react";
 import { SystemConfig } from "../api/types/discoveryType";
 

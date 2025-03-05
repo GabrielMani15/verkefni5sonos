@@ -1,4 +1,3 @@
-"use client"
 import { NextResponse } from "next/server";
 import { AsyncDeviceDiscovery } from "sonos";
 import { DeviceInfo } from "../types/discoveryType";

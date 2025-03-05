@@ -130,10 +130,6 @@ const PlayListHolder: React.FC<{
   );
 };
 
-const AreaHolder = () => {
-  return;
-};
-
 const SpotifyLoading = (authInProgress) => {
   return (
     <div className="flex justify-center items-center h-64">
@@ -427,11 +423,6 @@ const PlaylistComponent: React.FC = () => {
     // Extract the Spotify URL from the track
     const trackUrl = track.track.external_urls.spotify;
     const trackUri = track.track.uri;
-
-    //console.log("Track URL for Sonos:", trackUrl);
-    //console.log("Track URI:", trackUri);
-
-    // This is where you would call your Sonos play function
     playSonosTrack(trackUrl, trackUri);
   };
 

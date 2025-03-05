@@ -93,20 +93,16 @@ export function TouchPad({ device }) {
   useEffect(() => {
     switch (swipeDirection) {
       case "Swipe Right":
-        console.log("Action for Swipe Right - next track");
         sendDeviceCommand("nextTrack");
         break;
       case "Swipe Left":
-        console.log("Action for Swipe Left - previous track");
         sendDeviceCommand("previousTrack");
         break;
       case "Swipe Up":
-        console.log("Action for Swipe Up - Turning up the volume");
         sendDeviceCommand("volumeUp");
 
         break;
       case "Swipe Down":
-        console.log("Action for Swipe Down - Turning down volume");
         sendDeviceCommand("volumeDown");
         break;
       default:
@@ -114,13 +110,11 @@ export function TouchPad({ device }) {
     }
 
     if (cornerClick) {
-      console.log(`Corner clicked: ${cornerClick}`);
       console.warn("No config found on corner click - Warn");
-      sendDeviceCommand("play");
+      //sendDeviceCommand("play");
     }
 
     if (doubleClick) {
-      console.log("Double Click detected!");
       sendDeviceCommand("playStateHandler");
     }
   }, [swipeDirection, cornerClick, doubleClick, device]);
@@ -129,8 +123,6 @@ export function TouchPad({ device }) {
     <section
       id="touchPad"
       className="relative mt-3 mb-8 flex h-full w-full max-w-[31.125rem] min-h-[15.75rem] max-h-52 flex-col items-center justify-center rounded-[0.563rem] border-[2px] border-[#7c7c7c3e] bg-white text-xl font-semibold"
-    >
-      {swipeDirection || cornerClick || (doubleClick ? "Double Clicked!" : "")}
-    </section>
+    />
   );
 }

@@ -5,7 +5,7 @@ import { useEffect } from "react";
 
 export default function DevicesAndGroups({ systems }) {
   const { selectedDevice, setSelectedDevice } = useSystemContext();
-
+  //If user has set default speaker it will get and open up that device media player
   useEffect(() => {
     const speaker = localStorage.getItem("speaker");
     const config = localStorage.getItem("systems");

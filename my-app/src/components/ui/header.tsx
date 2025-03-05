@@ -87,7 +87,7 @@ export default function Header() {
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           onClick={handleSettingsClick} // Event handler for showing settings
-          className="cursor-pointer" // Optional: Add cursor pointer for visual feedback
+          className="cursor-pointer"
         >
           <rect
             width="20.75"
