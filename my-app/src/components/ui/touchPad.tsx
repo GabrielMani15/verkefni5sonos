@@ -11,14 +11,28 @@ export function TouchPad({ device }) {
 
   let touchStartX = 0;
   let touchStartY = 0;
+  /* 
+  useEffect(() => {
+    const preventDefault = (e) => e.preventDefault();
+
+    document.addEventListener("touchmove", preventDefault, { passive: false });
+
+    return () => {
+      document.removeEventListener("touchmove", preventDefault);
+    };
+  }, []); */
 
   const handleTouchStart = (e) => {
+    e.preventDefault(); // Prevent scrolling
+
     const touch = e.touches[0];
     touchStartX = touch.clientX;
     touchStartY = touch.clientY;
   };
 
   const handleTouchMove = (e) => {
+    e.preventDefault(); // Prevent scrolling
+
     const touch = e.touches[0];
     const diffX = touch.clientX - touchStartX;
     const diffY = touch.clientY - touchStartY;
@@ -122,7 +136,7 @@ export function TouchPad({ device }) {
   return (
     <section
       id="touchPad"
-      className="relative mt-3 mb-8 flex h-full w-full max-w-[31.125rem] min-h-[15.75rem] max-h-52 flex-col items-center justify-center rounded-[0.563rem] border-[2px] border-[#7c7c7c3e] bg-white text-xl font-semibold"
+      className="absolute bottom-0 left-0 flex h-full w-full max-w-full min-h-[15.75rem] max-h-52 flex-col items-center justify-center rounded-t-full border-[2px] border-t-[40px] border-r-[40px] border-l-[40px] border-[#c9c9c93e] mx-auto bg-white text-xl font-semibold"
     />
   );
 }

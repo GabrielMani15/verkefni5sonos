@@ -3,7 +3,8 @@ import useDevice from "@/app/libs/useDevice";
 import { useSystemContext } from "@/app/libs/systemContext";
 // Types for playlist and track data
 import { Playlist, Track, Profile } from "@/app/api/types/discoveryType";
-import { SearchIcon } from "lucide-react";
+import { SearchIcon, XIcon, ArrowLeftIcon } from "lucide-react";
+
 type PlaylistTapProps = {
   playlist: Playlist;
   openPlaylist: any;
@@ -33,6 +34,7 @@ const SearchBar = () => {
     </div>
   );
 };
+
 const PlaylistTap: React.FC<PlaylistTapProps> = ({
   playlist,
   openPlaylist,
@@ -41,7 +43,7 @@ const PlaylistTap: React.FC<PlaylistTapProps> = ({
     <div
       key={playlist.id}
       onClick={() => openPlaylist(playlist.href)}
-      className="flex h-full items-center py-2 transition w-full px-3  duration-300 border-[#7c7c7c3e] border-[1px]  hover:bg-slate-50 text-black rounded-full cursor-pointer"
+      className="flex h-full items-center py-2 transition px-3 duration-300 border-[#7c7c7c3e] border-[1px] hover:bg-slate-50 text-black rounded-full cursor-pointer"
     >
       <div className="flex gap-x-4 items-center">
         {playlist.images[0]?.url ? (
@@ -56,12 +58,13 @@ const PlaylistTap: React.FC<PlaylistTapProps> = ({
           </div>
         )}
         <div className="flex flex-col">
-          <h3 className="text-sm font-semibold truncate max-w-[220px]">
-            {playlist.name.length > 25
-              ? playlist.name.slice(0, playlist.name.lastIndexOf(" ", 25)) +
+          <h3 className="text-sm font-semibold truncate">
+            {playlist.name.length > 8
+              ? playlist.name.slice(0, playlist.name.lastIndexOf(" ", 8)) +
                 "..."
               : playlist.name}
           </h3>
+
           <p className="text-xs font-medium text-slate-900">{`By ${playlist.owner}`}</p>
         </div>
       </div>
@@ -82,49 +85,46 @@ const PlayListHolder: React.FC<{
     setIsDragging(true);
     startY.current = e.clientY;
     scrollTop.current = scrollContainer.current!.scrollTop;
-    document.body.style.userSelect = "none"; // Disable text selection during drag
+    document.body.style.userSelect = "none";
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!isDragging) return;
     const distance = e.clientY - startY.current;
     if (scrollContainer.current) {
-      // Smooth dragging effect by updating scrollTop in small increments
       scrollContainer.current.scrollTop = scrollTop.current - distance;
     }
   };
 
   const handleMouseUp = () => {
     setIsDragging(false);
-    document.body.style.userSelect = "auto"; // Re-enable text selection
+    document.body.style.userSelect = "auto";
   };
 
   return playlists.length > 0 ? (
-    <>
+    <div
+      className="relative overflow-hidden"
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
+      onMouseLeave={handleMouseUp}
+    >
       <div
-        className="overflow-hidden relative"
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp} // Prevent dragging if the mouse leaves
+        ref={scrollContainer}
+        className="overflow-y-auto h-36  scrollbar-hidden gap-y-4 gap-x-4 smooth-scroll grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 md:grid-cols-4 2xl:grid-cols-8 mx-auto place-items-center"
+        style={{ WebkitOverflowScrolling: "touch" }}
+        tabIndex={0}
       >
-        <div
-          ref={scrollContainer}
-          className="overflow-y-auto h-36 scrollbar-hidden gap-y-4 gap-x-4 smooth-scroll grid grid-cols-2 place-items-center"
-          style={{ WebkitOverflowScrolling: "touch" }}
-          tabIndex={0} // Make it focusable for keyboard navigation
-        >
-          {playlists.map((playlist) => (
-            <PlaylistTap
-              key={playlist.id}
-              playlist={playlist}
-              openPlaylist={openPlaylist}
-            />
-          ))}
-        </div>
-        <SearchBar />
+        {playlists.map((playlist) => (
+          <PlaylistTap
+            key={playlist.id}
+            playlist={playlist}
+            openPlaylist={openPlaylist}
+          />
+        ))}
       </div>
-    </>
+      <SearchBar />
+    </div>
   ) : (
     <SpotfiyPlaylistZeroError />
   );
@@ -162,22 +162,40 @@ const SpotfiyPlaylistZeroError = () => {
     </div>
   );
 };
-const TracksHolder = ({ tracks, handlePlayTrack }) => {
+
+const TracksHolder = ({
+  tracks,
+  handlePlayTrack,
+  currentPlaylist,
+  goBackToPlaylists,
+}) => {
   return (
     tracks.length > 0 && (
-      <div className="bg-[#121212] rounded-[6px] h-fit px-4 py-3 min-w-[500px]">
-        <h2 className="text-lg font-semibold pt-2">Tracks</h2>
+      <div className="text-black rounded-[6px] h-fit px-4 py-3 w-full">
+        <div className="flex items-center justify-between mb-2">
+          <button
+            onClick={goBackToPlaylists}
+            className="flex items-center gap-2 hover:bg-slate-50 px-3 py-2 rounded-full font-semibold transition-colors"
+          >
+            <ArrowLeftIcon size={18} />
+            <span>Back to playlists</span>
+          </button>
+
+          <h2 className="text-lg font-semibold">
+            {currentPlaylist && currentPlaylist.name}
+          </h2>
+        </div>
+
         <div
           id="tracks-container"
-          className="bg-[#121212] rounded-[12px] py-4 pr-3 overflow-y-auto md:h-96 w-fit min-w-[500px]
+          className="rounded-[12px] py-4 pr-3 overflow-y-auto h-72 sm:h-96
           [&::-webkit-scrollbar]:w-2
           [&::-webkit-scrollbar-track]:bg-transparent
-          [&::-webkit-scrollbar-thumb]:bg-blue-500
-          dark:[&::-webkit-scrollbar-track]:bg-transparent
-          dark:[&::-webkit-scrollbar-thumb]:bg-blue-500"
+          [&::-webkit-scrollbar-thumb]:bg-black"
         >
           {tracks.map((track, index) => (
             <Tracks
+              key={track.track.id || index}
               track={track}
               handlePlayTrack={handlePlayTrack}
               index={index}
@@ -192,25 +210,30 @@ const TracksHolder = ({ tracks, handlePlayTrack }) => {
 const Tracks = ({ track, handlePlayTrack, index }) => {
   return (
     <div
-      key={track.track.id || index}
-      className="flex items-center p-3 hover:bg-[#282828] transition duration-200 rounded-md cursor-pointer "
+      className="flex items-center p-3 hover:bg-slate-50 transition duration-200 rounded-md cursor-pointer w-full z-50"
       onClick={() => handlePlayTrack(track)}
     >
-      <div className="text-gray-400 mr-4">{index + 1}</div>
-      <div className="flex-1">
-        <p className="font-semibold text-white">{track.track.name}</p>
-        <p className="text-sm text-slate-400 text-nowrap">
+      <div className="mr-2 sm:mr-4">{index + 1}</div>
+      <div className="flex-1 min-w-0">
+        <p className="font-semibold truncate">
+          {track.track.name.length > 12
+            ? track.track.name.slice(0, track.track.name.lastIndexOf(" ", 12)) +
+              "..."
+            : track.track.name}
+        </p>
+
+        <p className="text-sm truncate">
           {track.track.artists.map((artist) => artist.name).join(", ")}
         </p>
       </div>
-      <div className="text-slate-400  text-sm hidden md:block flex-grow">
+      <div className="hidden sm:block flex-grow text-sm truncate">
         {track.track.album.name}
       </div>
-      <div className="ml-4 text-blue-500">
+      <div className="ml-2 sm:ml-4 flex-shrink-0">
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
+          width="20"
+          height="20"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -233,9 +256,13 @@ const PlaylistComponent: React.FC = () => {
   const [userId, setUserId] = useState<string | null>(null);
   const [authInProgress, setAuthInProgress] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
+  const [showTracks, setShowTracks] = useState<boolean>(false);
+  const [currentPlaylist, setCurrentPlaylist] = useState<Playlist | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
   const { selectedDevice } = useSystemContext(); // Use context
 
-  const { sendDeviceCommand } = useDevice(selectedDevice);
+  const { sendDeviceCommand, errors } = useDevice(selectedDevice);
 
   const clientId = localStorage.getItem("spotifyId");
   const redirectUri = "http://localhost:3000/";
@@ -391,6 +418,11 @@ const PlaylistComponent: React.FC = () => {
     setLoading(false);
   };
 
+  // Find playlist by href
+  const findPlaylistByHref = (href: string) => {
+    return playlists.find((playlist) => playlist.href === href) || null;
+  };
+
   // Open a specific playlist and fetch tracks
   const openPlaylist = async (href: string) => {
     if (!accessToken) return;
@@ -411,11 +443,19 @@ const PlaylistComponent: React.FC = () => {
 
       const data = await response.json();
       setTracks(data.tracks.items);
+      setCurrentPlaylist(findPlaylistByHref(href));
+      setShowTracks(true);
     } catch (error) {
       console.error("Error opening playlist:", error);
     } finally {
       setLoading(false);
     }
+  };
+
+  // Go back to playlists view
+  const goBackToPlaylists = () => {
+    setShowTracks(false);
+    setCurrentPlaylist(null);
   };
 
   // Function to handle track selection and play on Sonos
@@ -427,11 +467,13 @@ const PlaylistComponent: React.FC = () => {
   };
 
   // Function to send track to Sonos
-  const playSonosTrack = (trackUrl: string, trackUri: string) => {
-    // Implementation depends on your Sonos API integration
-    // This is a placeholder for your actual Sonos play function
-    //console.log("Playing on Sonos:", trackUri);
-    sendDeviceCommand("play", undefined, trackUri);
+  const playSonosTrack = async (trackUrl: string, trackUri: string) => {
+    const response = await sendDeviceCommand("play", undefined, trackUri);
+
+    if (!response) {
+      setErrorMessage("Please select a device");
+      setTimeout(() => setErrorMessage(null), 3000);
+    }
   };
 
   // Initialize the application
@@ -456,7 +498,7 @@ const PlaylistComponent: React.FC = () => {
       const authInProgress = localStorage.getItem("auth_in_progress");
       if (!clientId) {
         setError(true);
-        throw new Error("No client id provied, go to settings and add it.");
+        throw new Error("No client id provided, go to settings and add it.");
       }
       // Check for authorization code in URL
       const params = new URLSearchParams(window.location.search);
@@ -501,10 +543,16 @@ const PlaylistComponent: React.FC = () => {
 
   return (
     <>
+      {errorMessage && (
+        <div className="fixed top-4 right-4 bg-black font-semibold text-white z-50 px-4 py-2 rounded-full shadow-md transition-all ease-in-out">
+          {errorMessage}
+        </div>
+      )}
+
       {!error ? (
         <div
-          className="w-fit text-white min-h-32 min-w-72 h-64 overflow-y-none rounded-[6px] mb-5 
-        [&::-webkit-scrollbar]:w-2
+          className="w-fit overflow-hidden text-white bg-white z-50 min-h-32 h-64 overflow-y-none rounded-[6px] mb-5 
+        [&::-webkit-scrollbar]:w-2 mx-auto
         [&::-webkit-scrollbar-track]:bg-black-100
         [&::-webkit-scrollbar-thumb]:bg-blue-500
         [&::-webkit-scrollbar-thumb]:rounded-full
@@ -514,20 +562,27 @@ const PlaylistComponent: React.FC = () => {
           {loading ? (
             <SpotifyLoading authInProgress={authInProgress} />
           ) : (
-            <div className="h-fit flex justify-between gap-x-5 max-md:gap-y-5">
-              <div
-                id="playlist-container"
-                className="text-black py-3 h-96 overflow-hidden"
-              >
-                <h1 className="text-lg font-semibold py-2">Your libary</h1>
-
-                <PlayListHolder
-                  playlists={playlists}
-                  openPlaylist={openPlaylist}
+            <div className="h-full overflow-hidden flex md:flex-row flex-col justify-between gap-5 max-md:gap-y-5">
+              {showTracks ? (
+                <TracksHolder
+                  tracks={tracks}
+                  handlePlayTrack={handlePlayTrack}
+                  currentPlaylist={currentPlaylist}
+                  goBackToPlaylists={goBackToPlaylists}
                 />
-              </div>
+              ) : (
+                <div
+                  id="playlist-container"
+                  className="text-black overflow-hidden pt-3 h-auto md:h-96"
+                >
+                  <h1 className="text-lg font-semibold py-2">Your Library</h1>
 
-              <TracksHolder tracks={tracks} handlePlayTrack={handlePlayTrack} />
+                  <PlayListHolder
+                    playlists={playlists}
+                    openPlaylist={openPlaylist}
+                  />
+                </div>
+              )}
             </div>
           )}
         </div>

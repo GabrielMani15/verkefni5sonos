@@ -19,10 +19,11 @@ export default function SystemsList() {
 
   return (
     <SystemProvider>
-      <div className="scrollbar-hidden overflow-hidden flex justify-center items-center">
+      <main className="h-screen">
         {isLoading && (
-          <section className="h-screen w-full flex justify-center items-center">
+          <section className="h-full w-full flex justify-center items-center flex-col">
             <div className="size-24 border-t-2 border-r-2 border-blue-600 rounded-full animate-spin"></div>
+            <h1 className="font-semibold py-4">Fetching systems</h1>
           </section>
         )}
         {error && <p className="text-red-500">{error}</p>}
@@ -34,15 +35,13 @@ export default function SystemsList() {
           !error &&
           Array.isArray(systems) &&
           systems.length > 0 && (
-            <section className="h-fit">
+            <>
               <Header />
-              <div className="relative w-full h-[100vh] py-5 overflow-hidden mb-5">
-                <SpotifyList />
-                <DevicesAndGroups systems={systems} />
-              </div>
-            </section>
+              <SpotifyList />
+              <DevicesAndGroups systems={systems} />
+            </>
           )}
-      </div>
+      </main>
     </SystemProvider>
   );
 }

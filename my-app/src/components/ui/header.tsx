@@ -13,7 +13,7 @@ export default function Header() {
   };
 
   return (
-    <section className="flex items-center justify-between gap-y-3 w-full py-2 h-fit rounded-[6px] text-black">
+    <section className="flex items-center justify-between gap-y-3 w-full pt-2 h-fit rounded-[6px] text-black">
       <div>
         <h1 className="text-[1.188rem] font-semibold">
           Good

@@ -13,7 +13,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="mx-5 my-3">{children}</body>
+      <body className="mx-5 h-screen overflow-hidden my-3">{children}</body>
     </html>
   );
 }
